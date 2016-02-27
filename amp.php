@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: PROJECT AMP
- * Description: Add AMP support to your WordPress site.
- * Plugin URI: https://github.com/automattic/amp-wp
+ * Description: AMP Support on Theme
+ * Plugin URI: https://github.com/Ba5nanas/project-amp/
  * Author: Ba5nanas
- * Author URI: https://automattic.com
+ * Author URI: http://themeforest.net/user/ba5nanas
  * Version: 0.0.1
  * Text Domain: amp
  * Domain Path: /languages/

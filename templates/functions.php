@@ -1,5 +1,5 @@
 <?php
-define( 'AMP_DEBUG', true );
+define( 'AMP_DEBUG', false );
 
 add_action("amp_enqueue_scripts",function(){
   amp_insert_css("first-item3","http://php.net/cached.php?t=1429291204&f=/styles/theme-base.css");
