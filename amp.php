@@ -67,7 +67,7 @@ function get_amp_template_directory(){
     return get_template_directory()."/amp/";
   }else{
     // get folder on plugin
-    return AMP__DIR__."/template/";
+    return AMP__DIR__."/templates/";
   }
 }
 
@@ -103,7 +103,7 @@ function amp_action(){
   }
   //do_action("insert_script");
   //$amp_tags->process_dom();
-  
+
   if(amp_check_mobile() && is_file($amp_template['template'])){
     do_action("amp_enqueue_scripts");
     $amp_tags->process_dom();
