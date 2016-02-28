@@ -2,15 +2,18 @@
 
 function amp_head(){
   do_action("amp_head");
+  wp_head();
 }
 
 function amp_footer(){
   do_action("amp_footer");
+  wp_footer();
 }
 
 function amp_get_header($name=""){
+  global $amp_path;
   if(is_amp_template()){
-    get_template_part("amp/header",$name);
+    get_template_part("{$amp_path}header",$name);
   }else{
     $item_name = "";
     if(!empty($name)){
@@ -21,8 +24,9 @@ function amp_get_header($name=""){
 }
 
 function amp_get_footer($name=""){
+  global $amp_path;
   if(is_amp_template()){
-    get_template_part("amp/footer",$name);
+    get_template_part("{$amp_path}footer",$name);
   }else{
     $item_name = "";
     if(!empty($name)){
@@ -50,23 +54,34 @@ function amp_run_script(){
   global $eq_js , $eq_css , $wp_filesystem;
   require_once (ABSPATH . '/wp-admin/includes/file.php');
   WP_Filesystem();
-
+  do_action("amp_before_action_script");
   ob_start();
   if(is_array($eq_css) && sizeof($eq_css) > 0){
     foreach($eq_css as $files){
       $item = array();
       $file = $files['url'];
       if($files['type'] != "font"){
-        preg_match('/wp-content\/(\S+)/i', $file, $item);
-        $item_file = ABSPATH.$item[0];
-        if(is_file($item_file)){
-          require_once($item_file);
-        }else{
 
+        preg_match('/wp-content\/(\S+)/i', $file, $item);
+
+        if(isset($item[0]) && !empty($item[0])){
+          $item_file = ABSPATH.$item[0];
+        }else{
+          $item_file = "";
+        }
+
+        if(!empty($item_file) && is_file($item_file)){
+
+          require($item_file);
+        }else{
           $file_explode = explode("/",$file);
           $count = sizeof($file_explode) - 1;
+          if(empty($file_explode[$count])){
+            continue;
+          }
           $file_name = $file_explode[$count];
           $folder_cache = get_amp_template_directory()."cache-css";
+
           if(is_file($folder_cache."/".$file_name)){
             require_once($folder_cache."/".$file_name);
           }else{
@@ -88,6 +103,7 @@ function amp_run_script(){
     $out = compress($out);
     echo "<style amp-custom>";
     echo $out;
+    do_action("amp-custom-css");
     echo "</style>";
 
     foreach($eq_css as $files){
@@ -95,21 +111,33 @@ function amp_run_script(){
         echo "<link href='{$files['url']}' rel='stylesheet' type='text/css'>";
       }
     }
+
+    foreach($eq_css as $files){
+      if($files['type'] == "style"){
+        echo "<link href='{$files['url']}' rel='stylesheet' type='text/css'>";
+      }
+    }
   }
 
   if(is_array($eq_js) && sizeof($eq_js) > 0){
     foreach($eq_js as $files){
-
         echo "<script async custom-element='{$files['tag']}' src='{$files['file']}'></script>";
-      
     }
   }
-
+  do_action("amp_after_action_script");
+  //if(is_user_logged_in()) {
+  //  echo '<style type="text/css" media="screen"> html { margin-top: 32px !important; } * html body { margin-top: 32px !important; } @media screen and ( max-width: 782px ) { html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } } </style>';
+  //}
+  $script_amp_project = apply_filters("script_amp_project","https://cdn.ampproject.org/v0.js");
+  echo '<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <script async src="'.$script_amp_project.'"></script>';
+  do_action("amp_after_main_script");
 }
 
 function amp_get_sidebar($name=""){
+  global $amp_path;
   if(is_amp_template()){
-    get_template_part("amp/sidebar",$name);
+    get_template_part("{$amp_path}sidebar",$name);
   }else{
     $item_name = "";
     if(!empty($name)){
@@ -120,8 +148,9 @@ function amp_get_sidebar($name=""){
 }
 
 function amp_get_template_part($slug,$name="") {
+  global $amp_path;
   if(is_amp_template()){
-    get_template_part("amp/{$slug}",$name);
+    get_template_part("{$amp_path}{$slug}",$name);
   }else{
     $item_name = "";
     if(!empty($name)){
@@ -142,7 +171,7 @@ function compress($buffer) {
     /* remove comments */
     $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
     /* remove tabs, spaces, newlines, etc. */
-    $buffer = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    ',' '), '', $buffer);
+    $buffer = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $buffer);
     return $buffer;
 }
 

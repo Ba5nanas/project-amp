@@ -1,62 +1,54 @@
 <?php
-/**
- * The main template file
- *
- * This is the most generic template file in a WordPress theme
- * and one of the two required files for a theme (the other being style.css).
- * It is used to display a page when nothing more specific matches a query.
- * E.g., it puts together the home page when no home.php file exists.
- *
- * @link http://codex.wordpress.org/Template_Hierarchy
- *
- * @package WordPress
- * @subpackage Twenty_Sixteen
- * @since Twenty Sixteen 1.0
- */
+amp_get_header();
+?>
 
-get_header(); ?>
+<div class="demo-blog mdl-layout mdl-js-layout has-drawer is-upgraded">
+	<main class="mdl-layout__content">
+		<div class="demo-blog__posts mdl-grid">
 
-	<div id="primary" class="content-area">
-		<main id="main" class="site-main" role="main">
 
-		<?php if ( have_posts() ) : ?>
+			<div id="primary" class="content-area">
+				<main id="main" class="site-main" role="main">
+					<?php
+					// Start the loop.
+					while ( have_posts() ) : the_post();
 
-			<?php if ( is_home() && ! is_front_page() ) : ?>
-				<header>
-					<h1 class="page-title screen-reader-text"><?php single_post_title(); ?></h1>
-				</header>
-			<?php endif; ?>
+						// Include the page content template.
+						amp_get_template_part( 'content' );
 
-			<?php
-			// Start the loop.
-			while ( have_posts() ) : the_post();
+						// If comments are open or we have at least one comment, load up the comment template.
 
-				/*
-				 * Include the Post-Format-specific template for the content.
-				 * If you want to override this in a child theme, then include a file
-				 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
-				 */
-				get_template_part( 'template-parts/content', get_post_format() );
+						// End of the loop.
+					endwhile;
+					?>
 
-			// End the loop.
-			endwhile;
+				</main><!-- .site-main -->
 
-			// Previous/next page navigation.
-			the_posts_pagination( array(
-				'prev_text'          => __( 'Previous page', 'twentysixteen' ),
-				'next_text'          => __( 'Next page', 'twentysixteen' ),
-				'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Page', 'twentysixteen' ) . ' </span>',
-			) );
+			</div><!-- .content-area -->
 
-		// If no content, include the "No posts found" template.
-		else :
-			get_template_part( 'template-parts/content', 'none' );
-
-		endif;
-		?>
-
-		</main><!-- .site-main -->
-	</div><!-- .content-area -->
-
-<?php get_sidebar(); ?>
-<?php get_footer(); ?>
+</div>
+<footer class="mdl-mini-footer">
+	<div class="mdl-mini-footer--left-section">
+		<button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+			<span class="visuallyhidden">Twitter</span>
+		</button>
+		<button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+			<span class="visuallyhidden">Facebook</span>
+		</button>
+		<button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
+			<span class="visuallyhidden">Google Plus</span>
+		</button>
+	</div>
+	<div class="mdl-mini-footer--right-section">
+		<button class="mdl-mini-footer--social-btn social-btn__share">
+			<i class="material-icons" role="presentation">share</i>
+			<span class="visuallyhidden">share</span>
+		</button>
+	</div>
+</footer>
+</main>
+<div class="mdl-layout__obfuscator"></div>
+</div>
+<?php
+amp_get_footer();
+?>

@@ -120,7 +120,7 @@ function amp_template_part(){
 }
 
 function amp_render($template){
-
+  
   require_once($template);
   exit;
 }

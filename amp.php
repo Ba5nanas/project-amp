@@ -17,29 +17,39 @@ define( 'AMP__DIR__', dirname( __FILE__ ) );
 // load includes
 add_action('init','amp_init_first',1);
 function amp_init_first(){
-
+  global $amp_path;
+  do_action('before_amp_load_library');
+  $amp_path = apply_filters("get_amp_template_directory_name","amp/");
   add_action( 'amp_load_library' , 'amp_load_library' );
   add_action( 'amp_load_module' , 'amp_load_module' );
   add_action( 'amp_load_helpers' , 'amp_load_helpers' );
   add_action( 'amp_load_init' , 'amp_load_init' );
 
-  add_action( 'init', 'amp_init' , 99);
+  // load function
   if(is_amp_template()){
     $dirname_amp = get_amp_template_directory();
     if(is_file("{$dirname_amp}functions.php")){
+      do_action('before_amp_load_functions');
       // load functions.php on folder theme
-      include("{$dirname_amp}functions.php");
+      include_once("{$dirname_amp}functions.php");
     }
   }else{
-    $dirname_amp = get_amp_template_directory();
-    include(AMP__DIR__."/templates/functions.php");
+    do_action('before_amp_load_functions');
+    include_once(AMP__DIR__."/templates/functions.php");
   }
 
+  // init system
+  do_action("before_amp_init");
+  add_action( 'init', 'amp_init' , 99);
+  do_action("after_amp_init");
 }
 
 function is_amp_template(){
+  global $amp_path;
   $dirname = get_template_directory();
-  if(is_dir("{$dirname}/amp")){
+  $name = get_template_directory().$amp_path;
+
+  if(is_dir($name)){
     return true;
   }else{
     return false;
@@ -54,17 +64,22 @@ function amp_init(){
   do_action('amp_load_module');
   do_action('amp_load_helpers');
   do_action('amp_load_init');
-  // amp action
-  add_action( 'amp_head' , 'amp_run_script' );
-  add_action( 'template_redirect', 'amp_action' );
 
+  // amp add script
+  add_action( 'amp_head' , 'amp_run_script' );
+  // amp action
+
+  add_action( 'template_redirect', 'amp_action' );
 }
 
 function get_amp_template_directory(){
+  global $amp_path;
   $dirname = get_template_directory();
-  if(is_dir("{$dirname}/amp")){
+  $name = get_template_directory()."/".$amp_path;
+  $dir = apply_filters("get_amp_template_directory",$name);
+  if(is_dir($dir)){
     // get folder on theme
-    return get_template_directory()."/amp/";
+    return $dir;
   }else{
     // get folder on plugin
     return AMP__DIR__."/templates/";
@@ -72,37 +87,23 @@ function get_amp_template_directory(){
 }
 
 function get_amp_template_directory_url(){
-  $dirname = get_template_directory();
-  if(is_dir("{$dirname}/amp")){
-    // get folder on theme
-    return get_template_directory_uri()."/amp/";
+  global $amp_path;
+  $dirname = get_template_directory_uri();
+  $name = get_template_directory_uri()."/".$amp_path;
+  $dir = apply_filters("get_amp_template_directory_url",$name);
+  if(is_amp_template()){
+    return $dir;
   }else{
-    // get folder on plugin
-    return plugins_url()."/template/";
+
+    return plugins_url("templates/",__FILE__);
   }
 }
 
 function amp_action(){
   global $amp_tags;
 
-
   $mytheme = wp_get_theme();
   $amp_template = amp_template_part();
-
-
-
-  if($amp_template['theme'] && is_file($amp_template['template'])){
-
-    // action pre function
-    do_action("project-amp-theme-functions");
-
-
-  } elseif(is_file($amp_template['template'])) {
-
-
-  }
-  //do_action("insert_script");
-  //$amp_tags->process_dom();
 
   if(amp_check_mobile() && is_file($amp_template['template'])){
     do_action("amp_enqueue_scripts");
@@ -116,7 +117,7 @@ function amp_action(){
 // check mobile working
 function amp_check_mobile(){
   global $detect;
-  if (defined('AMP_DEBUG')) {
+  if (defined('AMP_DEBUG') && AMP_DEBUG == true) {
     return true;
   }
   if($detect->isMobile() || $detect->isTablet() || ($detect->isMobile() && !$detect->isTablet()) ){
@@ -130,20 +131,25 @@ function amp_load_library(){
   require_once(AMP__DIR__."/core/class-amp.php");
   require_once(AMP__DIR__."/core/class-amp-tags.php");
   $detect = new Mobile_Detect;
+  do_action("on_amp_load_library");
 }
 
 function amp_load_module(){
   require_once(AMP__DIR__."/core/amp-woocommerce.php");
   require_once(AMP__DIR__."/core/amp-bbpress.php");
   require_once(AMP__DIR__."/core/amp-buddypress.php");
+  do_action("on_amp_load_module");
 }
 
 function amp_load_helpers(){
 
   require_once(AMP__DIR__."/core/amp-helpers.php");
   require_once(AMP__DIR__."/core/amp-template-loader.php");
+
+  do_action("on_amp_load_helpers");
 }
 
 function amp_load_init(){
   require_once(AMP__DIR__."/core/amp-init-tags.php");
+  do_action("on_amp_load_init");
 }
