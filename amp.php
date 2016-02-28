@@ -5,7 +5,7 @@
  * Plugin URI: https://github.com/Ba5nanas/project-amp/
  * Author: Ba5nanas
  * Author URI: http://themeforest.net/user/ba5nanas
- * Version: 0.0.1
+ * Version: 0.0.6
  * Text Domain: amp
  * Domain Path: /languages/
  * License: GPLv2 or later
