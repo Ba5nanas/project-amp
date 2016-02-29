@@ -5,7 +5,7 @@
  * Plugin URI: https://github.com/Ba5nanas/project-amp/
  * Author: Ba5nanas
  * Author URI: http://themeforest.net/user/ba5nanas
- * Version: 0.0.6
+ * Version: 0.1
  * Text Domain: amp
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -65,6 +65,7 @@ function amp_init(){
   do_action('amp_load_helpers');
   do_action('amp_load_init');
 
+
   // amp add script
   add_action( 'amp_head' , 'amp_run_script' );
   // amp action
@@ -107,6 +108,7 @@ function amp_action(){
 
   if(amp_check_mobile() && is_file($amp_template['template'])){
     do_action("amp_enqueue_scripts");
+    require_once(AMP__DIR__."/core/amp-templates-actions.php");
     $amp_tags->process_dom();
     // render
     amp_render($amp_template['template']);
@@ -150,6 +152,11 @@ function amp_load_helpers(){
 }
 
 function amp_load_init(){
+
   require_once(AMP__DIR__."/core/amp-init-tags.php");
   do_action("on_amp_load_init");
+  //global $wp_admin_bar;
+  //$wp_admin_bar->render();
+
+  //add_action( 'admin_bar_menu', 'amp_footer', 10, 2 );
 }

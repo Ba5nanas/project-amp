@@ -2,12 +2,13 @@
 
 function amp_head(){
   do_action("amp_head");
-  wp_head();
 }
 
 function amp_footer(){
+
+  //print_r($wp_admin_bar);
+  //exit;
   do_action("amp_footer");
-  wp_footer();
 }
 
 function amp_get_header($name=""){
@@ -100,10 +101,13 @@ function amp_run_script(){
 
     }
     $out = ob_get_clean();
+    $out = str_replace("(amp_template)",get_amp_template_directory_url(),$out);
+    $out = apply_filters("amp-css",$out);
     $out = compress($out);
     echo "<style amp-custom>";
-    echo $out;
-    do_action("amp-custom-css");
+    do_action("amp-before-custom-css",$out);
+    echo apply_filters("amp-css-action",$out);
+    do_action("amp-after-custom-css",$out);
     echo "</style>";
 
     foreach($eq_css as $files){
@@ -124,14 +128,18 @@ function amp_run_script(){
         echo "<script async custom-element='{$files['tag']}' src='{$files['file']}'></script>";
     }
   }
+
+
   do_action("amp_after_action_script");
-  //if(is_user_logged_in()) {
-  //  echo '<style type="text/css" media="screen"> html { margin-top: 32px !important; } * html body { margin-top: 32px !important; } @media screen and ( max-width: 782px ) { html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } } </style>';
-  //}
-  $script_amp_project = apply_filters("script_amp_project","https://cdn.ampproject.org/v0.js");
+  if(is_user_logged_in()) {
+    echo '<style type="text/css" media="screen"> html { margin-top: 32px !important; } * html body { margin-top: 32px !important; } @media screen and ( max-width: 782px ) { html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } } </style>';
+  }
+
+  $script_amp_project = apply_filters("script_amp_project",plugins_url("core/assets/js/v0.js",dirname(__FILE__)));
   echo '<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
   <script async src="'.$script_amp_project.'"></script>';
   do_action("amp_after_main_script");
+
 }
 
 function amp_get_sidebar($name=""){
