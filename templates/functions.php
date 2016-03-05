@@ -1,5 +1,5 @@
 <?php
-define( 'AMP_DEBUG', true );
+define( 'AMP_DEBUG', false );
 
 add_action("project_amp_theme_setup",function(){
   amp_content_width(600);
