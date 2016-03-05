@@ -15,10 +15,14 @@ define( 'AMP__FILE__', __FILE__ );
 define( 'AMP__DIR__', dirname( __FILE__ ) );
 
 // load includes
-add_action('init','amp_init_first',1);
+add_action('init','amp_init_first',2);
 function amp_init_first(){
   global $amp_path;
   do_action('before_amp_load_library');
+  $fban = apply_filters("amp-instant-article",false);
+  if(strpos($_SERVER['HTTP_USER_AGENT'],"FBAN") && $fban == true){
+    return;
+  }
   $amp_path = apply_filters("get_amp_template_directory_name","amp/");
   add_action( 'amp_load_library' , 'amp_load_library' );
   add_action( 'amp_load_module' , 'amp_load_module' );
@@ -155,8 +159,5 @@ function amp_load_init(){
 
   require_once(AMP__DIR__."/core/amp-init-tags.php");
   do_action("on_amp_load_init");
-  //global $wp_admin_bar;
-  //$wp_admin_bar->render();
-
-  //add_action( 'admin_bar_menu', 'amp_footer', 10, 2 );
+  
 }

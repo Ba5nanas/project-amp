@@ -16,3 +16,6 @@
     <?php amp_head(); ?>
   </head>
   <body <?php body_class(); ?>>
+<div class='header-amp-single'>
+  
+</div>
