@@ -5,20 +5,37 @@
  * Plugin URI: https://github.com/Ba5nanas/project-amp/
  * Author: Ba5nanas
  * Author URI: http://themeforest.net/user/ba5nanas
- * Version: 0.1
- * Text Domain: amp
+ * Version: 0.2.1
+ * Text Domain: project amp
  * Domain Path: /languages/
  * License: GPLv2 or later
  */
 
-define( 'AMP__FILE__', __FILE__ );
-define( 'AMP__DIR__', dirname( __FILE__ ) );
+define( 'PROJECTAMP__FILE__', __FILE__ );
+define( 'PROJECTAMP__DIR__', dirname( __FILE__ ) );
+
+register_activation_hook( __FILE__, 'project_amp_activate' );
+function project_amp_activate(){
+	amp_init_first();
+	flush_rewrite_rules();
+}
+
+register_deactivation_hook( __FILE__, 'project_amp_deactivate' );
+function project_amp_deactivate(){
+	flush_rewrite_rules();
+}
 
 // load includes
 add_action('init','amp_init_first',2);
 function amp_init_first(){
   global $amp_path;
   do_action('before_amp_load_library');
+	if(function_exists("amp_init")){
+		return;
+	}
+	if(strpos($_SERVER['HTTP_USER_AGENT'],"Google")){
+    return;
+  }
   $fban = apply_filters("amp-instant-article",false);
   if(strpos($_SERVER['HTTP_USER_AGENT'],"FBAN") && $fban == true){
     return;
@@ -39,13 +56,13 @@ function amp_init_first(){
     }
   }else{
     do_action('before_amp_load_functions');
-    include_once(AMP__DIR__."/templates/functions.php");
+    include_once(PROJECTAMP__DIR__."/templates/functions.php");
   }
 
   // init system
-  do_action("before_amp_init");
-  add_action( 'init', 'amp_init' , 99);
-  do_action("after_amp_init");
+  do_action("before_project_amp_init");
+  add_action( 'init', 'project_amp_init' , 99);
+  do_action("after_project_amp_init");
 }
 
 function is_amp_template(){
@@ -60,7 +77,7 @@ function is_amp_template(){
   }
 }
 
-function amp_init(){
+function project_amp_init(){
   global $amp_tags;
   // load Library
   do_action('amp_load_library');
@@ -68,6 +85,7 @@ function amp_init(){
   do_action('amp_load_module');
   do_action('amp_load_helpers');
   do_action('amp_load_init');
+	do_action("project_amp_theme_setup");
 
 
   // amp add script
@@ -87,7 +105,7 @@ function get_amp_template_directory(){
     return $dir;
   }else{
     // get folder on plugin
-    return AMP__DIR__."/templates/";
+    return PROJECTAMP__DIR__."/templates/";
   }
 }
 
@@ -112,10 +130,10 @@ function amp_action(){
 
   if(amp_check_mobile() && is_file($amp_template['template'])){
     do_action("amp_enqueue_scripts");
-    require_once(AMP__DIR__."/core/amp-templates-actions.php");
+    require_once(PROJECTAMP__DIR__."/core/amp-templates-actions.php");
     $amp_tags->process_dom();
     // render
-    amp_render($amp_template['template']);
+    project_amp_render($amp_template['template']);
   }
 
 }
@@ -133,31 +151,31 @@ function amp_check_mobile(){
 
 function amp_load_library(){
   global $detect;
-  require_once(AMP__DIR__."/core/libs/Mobile_Detect.php");
-  require_once(AMP__DIR__."/core/class-amp.php");
-  require_once(AMP__DIR__."/core/class-amp-tags.php");
+  require_once(PROJECTAMP__DIR__."/core/libs/Mobile_Detect.php");
+  require_once(PROJECTAMP__DIR__."/core/class-amp.php");
+  require_once(PROJECTAMP__DIR__."/core/class-amp-tags.php");
   $detect = new Mobile_Detect;
   do_action("on_amp_load_library");
 }
 
 function amp_load_module(){
-  require_once(AMP__DIR__."/core/amp-woocommerce.php");
-  require_once(AMP__DIR__."/core/amp-bbpress.php");
-  require_once(AMP__DIR__."/core/amp-buddypress.php");
+  require_once(PROJECTAMP__DIR__."/core/amp-woocommerce.php");
+  require_once(PROJECTAMP__DIR__."/core/amp-bbpress.php");
+  require_once(PROJECTAMP__DIR__."/core/amp-buddypress.php");
   do_action("on_amp_load_module");
 }
 
 function amp_load_helpers(){
 
-  require_once(AMP__DIR__."/core/amp-helpers.php");
-  require_once(AMP__DIR__."/core/amp-template-loader.php");
+  require_once(PROJECTAMP__DIR__."/core/amp-helpers.php");
+  require_once(PROJECTAMP__DIR__."/core/amp-template-loader.php");
 
   do_action("on_amp_load_helpers");
 }
 
 function amp_load_init(){
 
-  require_once(AMP__DIR__."/core/amp-init-tags.php");
+  require_once(PROJECTAMP__DIR__."/core/amp-init-tags.php");
   do_action("on_amp_load_init");
-  
+
 }

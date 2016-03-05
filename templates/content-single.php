@@ -9,38 +9,57 @@
 ?>
 
 
-<article id="post-<?php the_ID(); ?>" <?php post_class("mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col"); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class(""); ?>>
 
+	<header class="entry-header">
 
-	<header class="entry-header mdl-card__media mdl-color-text--grey-50" style="background-image:url('<?php echo wp_get_attachment_url( get_post_thumbnail_id( get_the_ID() ) ); ?>'); background-size:cover;">
-
-		<?php the_title( '<h3 class="entry-title">', '</h3>' ); ?>
+		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
 
 	</header><!-- .entry-header -->
 
+	<ul class="amp-wp-meta">
 
-	<div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
-		<div class="minilogo"></div>
-		<div>
-			<strong><?php echo get_the_title(); ?></strong>
-			<span><?php the_date(); ?></span>
-		</div>
-		<div class="section-spacer"></div>
-		<div class="meta__favorites">
-			425 <i class="material-icons" role="presentation">favorite</i>
-			<span class="visuallyhidden">favorites</span>
-		</div>
-		<div>
-			<i class="material-icons" role="presentation">bookmark</i>
-			<span class="visuallyhidden">bookmark</span>
-		</div>
-		<div>
-			<i class="material-icons" role="presentation">share</i>
-			<span class="visuallyhidden">share</span>
-		</div>
-	</div>
+		<li class="amp-wp-byline">
+			<?php if ( function_exists( 'get_avatar_url' ) ) : ?>
+			<amp-img src="<?php echo esc_url( get_avatar_url( get_the_author_meta('user_email'), array(
+				'size' => 24,
+			) ) ); ?>" width="24" height="24" layout="fixed"></amp-img>
+			<?php endif; ?>
+			<span class="amp-wp-author"><?php echo esc_html( get_the_author_meta('display_name') ); ?></span>
+		</li>
 
-	<div class="entry-content mdl-color-text--grey-700 mdl-card__supporting-text">
+		<li class="amp-wp-posted-on">
+			<time datetime="<?php echo esc_attr( date( 'c', get_the_time('U') ) ); ?>">
+				<?php
+				echo esc_html(
+					sprintf(
+						_x( '%s ago', '%s = human-readable time difference', 'amp' ),
+						human_time_diff( get_the_time('U') )
+					)
+				);
+				?>
+			</time>
+		</li>
+
+		<?php $categories = get_the_category_list( _x( ', ', 'Used between list items, there is a space after the comma.', 'amp' ) ); ?>
+		<?php if ( $categories ) : ?>
+			<li class="amp-wp-tax-category">
+				<span class="screen-reader-text">Categories:</span>
+				<?php echo $categories; ?>
+			</li>
+		<?php endif; ?>
+
+		<?php $tags = get_the_tag_list( '', _x( ', ', 'Used between list items, there is a space after the comma.', 'amp' ) ); ?>
+		<?php if ( $tags ) : ?>
+			<li class="amp-wp-tax-tag">
+				<span class="screen-reader-text">Tags:</span>
+				<?php echo $tags; ?>
+			</li>
+		<?php endif; ?>
+
+	</ul>
+
+	<div class="entry-content">
 		<?php the_content(); ?>
 	</div>
 

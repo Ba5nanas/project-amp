@@ -20,7 +20,7 @@ function amp_get_header($name=""){
     if(!empty($name)){
       $item_name = "-{$name}";
     }
-    require(AMP__DIR__."/templates/header{$item_name}.php");
+    require(PROJECTAMP__DIR__."/templates/header{$item_name}.php");
   }
 }
 
@@ -33,7 +33,7 @@ function amp_get_footer($name=""){
     if(!empty($name)){
       $item_name = "-{$name}";
     }
-    require(AMP__DIR__."/templates/footer{$item_name}.php");
+    require(PROJECTAMP__DIR__."/templates/footer{$item_name}.php");
   }
 }
 
@@ -51,8 +51,17 @@ function amp_insert_css($name,$file,$type=""){
   }
 }
 
+function amp_content_width($width) {
+  global $project_amp_content_width;
+  if(empty($project_amp_content_width)){
+    $project_amp_content_width = 600;
+  }else{
+    $project_amp_content_width = $width;
+  }
+}
+
 function amp_run_script(){
-  global $eq_js , $eq_css , $wp_filesystem;
+  global $eq_js , $eq_css , $wp_filesystem,$project_amp_content_width;
   require_once (ABSPATH . '/wp-admin/includes/file.php');
   WP_Filesystem();
   do_action("amp_before_action_script");
@@ -101,7 +110,8 @@ function amp_run_script(){
 
     }
     $out = ob_get_clean();
-    $out = str_replace("(amp_template)",get_amp_template_directory_url(),$out);
+    $out = str_replace("{{amp_template}}",get_amp_template_directory_url(),$out);
+    $out = str_replace("{{amp_content_width}}",$project_amp_content_width."px",$out);
     $out = apply_filters("amp-css",$out);
     $out = compress($out);
     echo "<style amp-custom>";
@@ -151,7 +161,7 @@ function amp_get_sidebar($name=""){
     if(!empty($name)){
       $item_name = "-{$name}";
     }
-    require(AMP__DIR__."/templates/sidebar{$item_name}.php");
+    require(PROJECTAMP__DIR__."/templates/sidebar{$item_name}.php");
   }
 }
 
@@ -164,7 +174,7 @@ function amp_get_template_part($slug,$name="") {
     if(!empty($name)){
       $item_name = "-{$name}";
     }
-    require(AMP__DIR__."/templates/{$slug}{$item_name}.php");
+    require(PROJECTAMP__DIR__."/templates/{$slug}{$item_name}.php");
   }
 }
 

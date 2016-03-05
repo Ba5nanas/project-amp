@@ -107,7 +107,8 @@ function amp_template_part(){
 
   }else{
     // get on plugins
-    $dirname = AMP__DIR__;
+    
+    $dirname = PROJECTAMP__DIR__;
     $item = explode("/",$template);
     $last_item = sizeof($item)-1;
     $template = "{$dirname}/templates/$item[$last_item]";
@@ -119,8 +120,8 @@ function amp_template_part(){
   return $out;
 }
 
-function amp_render($template){
-  
+function project_amp_render($template){
+
   require_once($template);
   exit;
 }

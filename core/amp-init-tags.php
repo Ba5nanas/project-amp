@@ -1,5 +1,5 @@
 <?php
-require_once(AMP__DIR__."/core/embeds/class-youtube.php");
+require_once(PROJECTAMP__DIR__."/core/embeds/class-youtube.php");
 
 // register_extension
 amp_register_extension("youtube","amp_youtube");
